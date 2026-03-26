@@ -35,7 +35,12 @@ function App() {
       )}
 
       {state.status === 'countdown' && (
-        <Countdown count={countdown} />
+        <>
+          <Countdown count={countdown} />
+          <div className="game-board">
+            <div className="target-word">{state.targetWord}</div>
+          </div>
+        </>
       )}
 
       {state.status === 'playing' && (

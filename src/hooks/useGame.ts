@@ -43,12 +43,11 @@ export function useGame() {
   const isSuddenDeath = mode === 'sudden-death' || mode === 'ez';
 
   const launchGame = useCallback(() => {
-    const word = mode === 'ez' ? 'ez' : generateWord();
     const duration = isSuddenDeath ? SUDDEN_DEATH_MAX_TIME : mode;
 
-    setState({
+    setState(prev => ({
+      ...prev,
       status: 'playing',
-      targetWord: word,
       input: '',
       score: 0,
       errors: 0,
@@ -56,7 +55,7 @@ export function useGame() {
       elapsedTime: 0,
       wpm: 0,
       hasError: false,
-    });
+    }));
 
     startTimeRef.current = Date.now();
 
@@ -81,7 +80,12 @@ export function useGame() {
     clearTimer();
     clearCountdown();
 
-    setState(prev => ({ ...prev, status: 'countdown' }));
+    const word = mode === 'ez' ? 'ez' : generateWord();
+    setState({
+      ...initialState,
+      status: 'countdown',
+      targetWord: word,
+    });
     setCountdown(COUNTDOWN_SECONDS);
 
     countdownRef.current = setInterval(() => {

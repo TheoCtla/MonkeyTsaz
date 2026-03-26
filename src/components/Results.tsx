@@ -11,13 +11,14 @@ interface ResultsProps {
 
 export function Results({ score, wpm, errors, mode, onRestart }: ResultsProps) {
   const accuracy = calculateAccuracy(score, errors);
+  const isTraining = mode === 'ez-training';
   const isSuddenDeath = mode === 'sudden-death' || mode === 'ez';
   const finalScore = calculateScore(score, wpm);
 
   return (
     <div className="results">
-      <h2>Partie terminée</h2>
-      {isSuddenDeath && (
+      <h2>{isTraining ? 'Entraînement terminé' : 'Partie terminée'}</h2>
+      {isSuddenDeath && !isTraining && (
         <div className="final-score">
           <div className="stat-value">{finalScore}</div>
           <div className="stat-label">score</div>

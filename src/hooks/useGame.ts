@@ -41,9 +41,10 @@ export function useGame() {
   }, []);
 
   const isSuddenDeath = mode === 'sudden-death' || mode === 'ez';
+  const isTraining = mode === 'ez-training';
 
   const launchGame = useCallback(() => {
-    const duration = isSuddenDeath ? SUDDEN_DEATH_MAX_TIME : mode;
+    const duration = isTraining ? 0 : isSuddenDeath ? SUDDEN_DEATH_MAX_TIME : mode;
 
     setState(prev => ({
       ...prev,
@@ -62,6 +63,14 @@ export function useGame() {
     timerRef.current = setInterval(() => {
       const elapsed = (Date.now() - startTimeRef.current) / 1000;
       setState(prev => {
+        if (prev.status !== 'playing') return prev;
+        if (isTraining) {
+          return {
+            ...prev,
+            elapsedTime: elapsed,
+            wpm: calculateWpm(prev.score, elapsed),
+          };
+        }
         const newTimeLeft = Math.max(0, (isSuddenDeath ? SUDDEN_DEATH_MAX_TIME : mode) - Math.floor(elapsed));
         if (newTimeLeft <= 0) {
           return { ...prev, status: 'finished', timeLeft: 0, elapsedTime: elapsed };
@@ -74,13 +83,13 @@ export function useGame() {
         };
       });
     }, 100);
-  }, [mode, isSuddenDeath]);
+  }, [mode, isSuddenDeath, isTraining]);
 
   const startGame = useCallback(() => {
     clearTimer();
     clearCountdown();
 
-    const word = mode === 'ez' ? 'ez' : generateWord();
+    const word = mode === 'ez' || mode === 'ez-training' ? 'ez' : generateWord();
     setState({
       ...initialState,
       status: 'countdown',
@@ -135,7 +144,18 @@ export function useGame() {
         return { ...prev, input: '', errors: prev.errors + 1, hasError: true };
       }
     });
-  }, [mode, isSuddenDeath]);
+  }, [mode, isSuddenDeath, isTraining]);
+
+  const finishGame = useCallback(() => {
+    clearTimer();
+    const elapsed = (Date.now() - startTimeRef.current) / 1000;
+    setState(prev => ({
+      ...prev,
+      status: 'finished',
+      elapsedTime: elapsed,
+      wpm: calculateWpm(prev.score, elapsed),
+    }));
+  }, [clearTimer]);
 
   const reset = useCallback(() => {
     clearTimer();
@@ -151,5 +171,5 @@ export function useGame() {
     };
   }, [clearTimer, clearCountdown]);
 
-  return { state, mode, setMode, startGame, handleInput, submitWord, reset, countdown };
+  return { state, mode, setMode, startGame, handleInput, submitWord, reset, finishGame, countdown };
 }

@@ -262,6 +262,26 @@ body {
   opacity: 0.85;
 }
 
+.quit-btn.secondary {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--surface-color);
+  font-size: 0.8rem;
+  padding: 0.5rem 1.5rem;
+}
+
+.quit-btn.secondary:hover {
+  color: var(--error-color);
+  border-color: var(--error-color);
+}
+
+.training-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
 /* ---- Countdown ---- */
 .countdown {
   text-align: center;

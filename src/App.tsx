@@ -8,7 +8,7 @@ import { Results } from './components/Results';
 import { Countdown } from './components/Countdown';
 
 function App() {
-  const { state, mode, setMode, startGame, handleInput, submitWord, reset, countdown } = useGame();
+  const { state, mode, setMode, startGame, handleInput, submitWord, reset, finishGame, countdown } = useGame();
 
   return (
     <>
@@ -47,7 +47,7 @@ function App() {
 
       {state.status === 'playing' && (
         <>
-          <Timer timeLeft={state.timeLeft} />
+          <Timer timeLeft={mode === 'ez-training' ? Math.floor(state.elapsedTime) : state.timeLeft} />
           <GameBoard
             targetWord={state.targetWord}
             input={state.input}
@@ -56,7 +56,14 @@ function App() {
             onSubmit={submitWord}
           />
           <Stats score={state.score} wpm={state.wpm} errors={state.errors} />
-          <button className="quit-btn" onClick={reset}>abandonner</button>
+          {mode === 'ez-training' ? (
+            <div className="training-buttons">
+              <button className="quit-btn" onClick={finishGame}>terminer</button>
+              <button className="quit-btn secondary" onClick={reset}>abandonner</button>
+            </div>
+          ) : (
+            <button className="quit-btn" onClick={reset}>abandonner</button>
+          )}
         </>
       )}
 

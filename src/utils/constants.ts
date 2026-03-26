@@ -19,6 +19,7 @@ export const GAME_MODES: { label: string; value: GameMode }[] = [
   { label: '60s', value: 60 },
   { label: 'Mort Subite', value: 'sudden-death' },
   { label: 'ez', value: 'ez' },
+  { label: 'ez training', value: 'ez-training' },
 ];
 
 export const SUDDEN_DEATH_MAX_TIME = 300; // 5 min cap for sudden death

@@ -4,8 +4,6 @@ import { generateWord } from '../utils/wordGenerator';
 import { calculateWpm } from '../utils/wpm';
 import { SUDDEN_DEATH_MAX_TIME } from '../utils/constants';
 
-const COUNTDOWN_SECONDS = 5;
-
 const initialState: GameState = {
   status: 'idle',
   targetWord: '',
@@ -21,10 +19,9 @@ const initialState: GameState = {
 export function useGame() {
   const [mode, setMode] = useState<GameMode>(30);
   const [state, setState] = useState<GameState>(initialState);
-  const [countdown, setCountdown] = useState<number>(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(0);
+  const timerStartedRef = useRef<boolean>(false);
 
   const clearTimer = useCallback(() => {
     if (timerRef.current) {
@@ -33,38 +30,20 @@ export function useGame() {
     }
   }, []);
 
-  const clearCountdown = useCallback(() => {
-    if (countdownRef.current) {
-      clearInterval(countdownRef.current);
-      countdownRef.current = null;
-    }
-  }, []);
-
   const isSuddenDeath = mode === 'sudden-death' || mode === 'ez';
   const isTraining = mode === 'ez-training';
+  const isUnlimited = isTraining || mode === 'ez';
 
-  const launchGame = useCallback(() => {
-    const duration = isTraining ? 0 : isSuddenDeath ? SUDDEN_DEATH_MAX_TIME : mode;
-
-    setState(prev => ({
-      ...prev,
-      status: 'playing',
-      input: '',
-      score: 0,
-      errors: 0,
-      timeLeft: duration,
-      elapsedTime: 0,
-      wpm: 0,
-      hasError: false,
-    }));
-
+  const startTimer = useCallback(() => {
+    if (timerStartedRef.current) return;
+    timerStartedRef.current = true;
     startTimeRef.current = Date.now();
 
     timerRef.current = setInterval(() => {
       const elapsed = (Date.now() - startTimeRef.current) / 1000;
       setState(prev => {
         if (prev.status !== 'playing') return prev;
-        if (isTraining) {
+        if (isUnlimited) {
           return {
             ...prev,
             elapsedTime: elapsed,
@@ -83,31 +62,27 @@ export function useGame() {
         };
       });
     }, 100);
-  }, [mode, isSuddenDeath, isTraining]);
+  }, [mode, isSuddenDeath, isUnlimited]);
 
   const startGame = useCallback(() => {
     clearTimer();
-    clearCountdown();
+    timerStartedRef.current = false;
 
     const word = mode === 'ez' || mode === 'ez-training' ? 'ez' : generateWord();
-    setState({
-      ...initialState,
-      status: 'countdown',
-      targetWord: word,
-    });
-    setCountdown(COUNTDOWN_SECONDS);
+    const duration = isUnlimited ? 0 : isSuddenDeath ? SUDDEN_DEATH_MAX_TIME : mode;
 
-    countdownRef.current = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearCountdown();
-          launchGame();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }, [clearTimer, clearCountdown, launchGame]);
+    setState({
+      status: 'playing',
+      targetWord: word,
+      input: '',
+      score: 0,
+      errors: 0,
+      timeLeft: duration,
+      elapsedTime: 0,
+      wpm: 0,
+      hasError: false,
+    });
+  }, [mode, clearTimer, isSuddenDeath, isUnlimited]);
 
   // Watch for finished status to clear timer
   useEffect(() => {
@@ -121,7 +96,8 @@ export function useGame() {
       if (prev.status !== 'playing') return prev;
       return { ...prev, input: value, hasError: false };
     });
-  }, []);
+    startTimer();
+  }, [startTimer]);
 
   const submitWord = useCallback(() => {
     setState(prev => {
@@ -159,17 +135,13 @@ export function useGame() {
 
   const reset = useCallback(() => {
     clearTimer();
-    clearCountdown();
-    setCountdown(0);
+    timerStartedRef.current = false;
     setState(initialState);
-  }, [clearTimer, clearCountdown]);
+  }, [clearTimer]);
 
   useEffect(() => {
-    return () => {
-      clearTimer();
-      clearCountdown();
-    };
-  }, [clearTimer, clearCountdown]);
+    return clearTimer;
+  }, [clearTimer]);
 
-  return { state, mode, setMode, startGame, handleInput, submitWord, reset, finishGame, countdown };
+  return { state, mode, setMode, startGame, handleInput, submitWord, reset, finishGame };
 }

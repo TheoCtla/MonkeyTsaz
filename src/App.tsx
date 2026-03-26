@@ -5,10 +5,9 @@ import { Timer } from './components/Timer';
 import { GameBoard } from './components/GameBoard';
 import { Stats } from './components/Stats';
 import { Results } from './components/Results';
-import { Countdown } from './components/Countdown';
 
 function App() {
-  const { state, mode, setMode, startGame, handleInput, submitWord, reset, finishGame, countdown } = useGame();
+  const { state, mode, setMode, startGame, handleInput, submitWord, reset, finishGame } = useGame();
 
   return (
     <>
@@ -19,7 +18,7 @@ function App() {
       <ModeSelector
         current={mode}
         onChange={setMode}
-        disabled={state.status === 'playing' || state.status === 'countdown'}
+        disabled={state.status === 'playing'}
       />
 
       {state.status === 'idle' && (
@@ -33,21 +32,9 @@ function App() {
         </>
       )}
 
-      {state.status === 'countdown' && (
-        <>
-          <Countdown count={countdown} />
-          <div className="game-board">
-            <div className="target-word">{state.targetWord}</div>
-          </div>
-          <button className="start-btn" onClick={reset}>
-            annuler
-          </button>
-        </>
-      )}
-
       {state.status === 'playing' && (
         <>
-          <Timer timeLeft={mode === 'ez-training' ? Math.floor(state.elapsedTime) : state.timeLeft} />
+          <Timer timeLeft={mode === 'ez-training' || mode === 'ez' ? Math.floor(state.elapsedTime) : state.timeLeft} />
           <GameBoard
             targetWord={state.targetWord}
             input={state.input}

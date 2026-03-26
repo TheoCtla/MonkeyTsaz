@@ -7,7 +7,7 @@ export interface GameConfig {
 }
 
 export interface GameState {
-  status: 'idle' | 'countdown' | 'playing' | 'finished';
+  status: 'idle' | 'playing' | 'finished';
   targetWord: string;
   input: string;
   score: number;

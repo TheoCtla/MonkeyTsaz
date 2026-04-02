@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { calculateAccuracy, calculateScore, calculateTrainingScore } from '../utils/wpm';
+import { calculateAccuracy, calculateScore, calculateSuddenDeathScore, calculateTrainingScore } from '../utils/wpm';
 import { submitScore, getTopScores } from '../services/leaderboardService';
 import type { GameMode, LeaderboardEntry } from '../types';
 import type { Session } from '@supabase/supabase-js';
@@ -28,7 +28,9 @@ export function Results({ score, wpm, errors, elapsedTime, mode, session, onRest
   const showTime = isSuddenDeath || isTraining;
   const finalScore = isTraining
     ? calculateTrainingScore(score, wpm, errors)
-    : calculateScore(score, wpm);
+    : isSuddenDeath
+      ? calculateSuddenDeathScore(score, wpm)
+      : calculateScore(score, wpm);
 
   const [topScores, setTopScores] = useState<LeaderboardEntry[]>([]);
   const [saved, setSaved] = useState(false);

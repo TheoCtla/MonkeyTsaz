@@ -29,7 +29,7 @@ body {
 
 #root {
   width: 100%;
-  max-width: 700px;
+  max-width: 900px;
   padding: 2rem;
 }
 
@@ -584,6 +584,77 @@ body {
 
 .back-link:hover {
   color: var(--main-color);
+}
+
+/* ---- Playing Layout (EZ Training) ---- */
+.playing-layout {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.playing-layout .playing-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---- Word History ---- */
+.word-history {
+  width: 160px;
+  flex-shrink: 0;
+  background: var(--surface-color);
+  border-radius: var(--border-radius);
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.word-history-header {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(49, 50, 68, 0.6);
+}
+
+.word-history-list {
+  max-height: 280px;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  align-content: flex-start;
+}
+
+.word-history-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.word-history-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.word-history-list::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 2px;
+}
+
+.word-entry {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.word-entry.correct {
+  color: var(--success-color);
+}
+
+.word-entry.wrong {
+  color: var(--error-color);
+  text-decoration: line-through;
 }
 
 /* ---- Idle hint ---- */

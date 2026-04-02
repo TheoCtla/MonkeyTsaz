@@ -18,6 +18,11 @@ export interface GameState {
   hasError: boolean;
 }
 
+export interface WordEntry {
+  word: string;
+  correct: boolean;
+}
+
 export interface GameStats {
   score: number;
   wpm: number;

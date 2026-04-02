@@ -8,11 +8,12 @@ import { Stats } from './components/Stats';
 import { Results } from './components/Results';
 import { Leaderboard } from './components/Leaderboard';
 import { AuthModal } from './components/AuthModal';
+import { WordHistory } from './components/WordHistory';
 import { getSession, onAuthStateChange, signOut } from './services/authService';
 import type { Session } from '@supabase/supabase-js';
 
 function App() {
-  const { state, mode, setMode, startGame, handleInput, submitWord, reset, finishGame } = useGame();
+  const { state, mode, setMode, startGame, handleInput, submitWord, reset, finishGame, wordHistory } = useGame();
   const [session, setSession] = useState<Session | null>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
@@ -65,25 +66,30 @@ function App() {
           )}
 
           {state.status === 'playing' && (
-            <>
-              <Timer timeLeft={mode === 'ez-training' || mode === 'ez' ? Math.floor(state.elapsedTime) : state.timeLeft} />
-              <GameBoard
-                targetWord={state.targetWord}
-                input={state.input}
-                hasError={state.hasError}
-                onInput={handleInput}
-                onSubmit={submitWord}
-              />
-              <Stats score={state.score} wpm={state.wpm} errors={state.errors} />
-              {mode === 'ez-training' ? (
-                <div className="training-buttons">
-                  <button className="quit-btn" onClick={finishGame}>terminer</button>
-                  <button className="quit-btn secondary" onClick={reset}>abandonner</button>
-                </div>
-              ) : (
-                <button className="quit-btn" onClick={reset}>abandonner</button>
+            <div className={mode === 'ez-training' ? 'playing-layout' : ''}>
+              <div className="playing-main">
+                <Timer timeLeft={mode === 'ez-training' || mode === 'ez' ? Math.floor(state.elapsedTime) : state.timeLeft} />
+                <GameBoard
+                  targetWord={state.targetWord}
+                  input={state.input}
+                  hasError={state.hasError}
+                  onInput={handleInput}
+                  onSubmit={submitWord}
+                />
+                <Stats score={state.score} wpm={state.wpm} errors={state.errors} />
+                {mode === 'ez-training' ? (
+                  <div className="training-buttons">
+                    <button className="quit-btn" onClick={finishGame}>terminer</button>
+                    <button className="quit-btn secondary" onClick={reset}>abandonner</button>
+                  </div>
+                ) : (
+                  <button className="quit-btn" onClick={reset}>abandonner</button>
+                )}
+              </div>
+              {mode === 'ez-training' && (
+                <WordHistory words={wordHistory} />
               )}
-            </>
+            </div>
           )}
 
           {state.status === 'finished' && (

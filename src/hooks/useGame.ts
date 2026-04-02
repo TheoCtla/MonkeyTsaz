@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import type { GameMode, GameState } from '../types';
+import type { GameMode, GameState, WordEntry } from '../types';
 import { generateWord } from '../utils/wordGenerator';
 import { calculateWpm } from '../utils/wpm';
 import { SUDDEN_DEATH_MAX_TIME } from '../utils/constants';
@@ -19,6 +19,7 @@ const initialState: GameState = {
 export function useGame() {
   const [mode, setMode] = useState<GameMode>(30);
   const [state, setState] = useState<GameState>(initialState);
+  const [wordHistory, setWordHistory] = useState<WordEntry[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(0);
   const timerStartedRef = useRef<boolean>(false);
@@ -71,6 +72,7 @@ export function useGame() {
     const word = mode === 'ez' || mode === 'ez-training' ? 'ez' : generateWord();
     const duration = isUnlimited ? 0 : isSuddenDeath ? SUDDEN_DEATH_MAX_TIME : mode;
 
+    setWordHistory([]);
     setState({
       status: 'playing',
       targetWord: word,
@@ -103,7 +105,14 @@ export function useGame() {
     setState(prev => {
       if (prev.status !== 'playing') return prev;
 
-      if (prev.input === prev.targetWord) {
+      const typed = prev.input;
+      const correct = typed === prev.targetWord;
+
+      if (isTraining) {
+        setWordHistory(h => [...h, { word: typed, correct }]);
+      }
+
+      if (correct) {
         const newScore = prev.score + 1;
         const elapsed = (Date.now() - startTimeRef.current) / 1000;
         return {
@@ -143,5 +152,5 @@ export function useGame() {
     return clearTimer;
   }, [clearTimer]);
 
-  return { state, mode, setMode, startGame, handleInput, submitWord, reset, finishGame };
+  return { state, mode, setMode, startGame, handleInput, submitWord, reset, finishGame, wordHistory };
 }

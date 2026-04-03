@@ -45,7 +45,7 @@ export function Results({ score, wpm, errors, elapsedTime, mode, session, onRest
     setSaving(true);
     setSaveError('');
     try {
-      await submitScore({ mode, score: finalScore, wpm, errors, accuracy, elapsed_time: Math.round(elapsedTime) });
+      await submitScore({ mode, score: finalScore, wpm, words: score, errors, accuracy, elapsed_time: Math.round(elapsedTime) });
       setSaved(true);
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Erreur');
@@ -117,6 +117,7 @@ export function Results({ score, wpm, errors, elapsedTime, mode, session, onRest
                 <th>joueur</th>
                 <th>score</th>
                 <th>wpm</th>
+                <th>mots</th>
                 {showTime && <th>temps</th>}
               </tr>
             </thead>
@@ -127,6 +128,7 @@ export function Results({ score, wpm, errors, elapsedTime, mode, session, onRest
                   <td>{entry.username ?? '—'}</td>
                   <td>{entry.score}</td>
                   <td>{entry.wpm}</td>
+                  <td>{entry.words ?? '—'}</td>
                   {showTime && <td>{entry.elapsed_time ? formatTime(entry.elapsed_time) : '—'}</td>}
                 </tr>
               ))}

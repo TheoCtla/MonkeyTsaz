@@ -8,6 +8,7 @@ create table if not exists public.leaderboard (
   wpm integer not null,
   errors integer not null default 0,
   accuracy integer not null default 100,
+  words integer not null default 0,
   elapsed_time integer,
   signature text not null,
   created_at timestamptz default now()

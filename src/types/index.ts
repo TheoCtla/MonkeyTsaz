@@ -37,6 +37,7 @@ export interface LeaderboardEntry {
   mode: string;
   score: number;
   wpm: number;
+  words: number;
   errors: number;
   accuracy: number;
   elapsed_time?: number;

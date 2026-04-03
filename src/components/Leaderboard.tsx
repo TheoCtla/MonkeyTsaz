@@ -59,6 +59,7 @@ export function Leaderboard({ session, onBack }: LeaderboardProps) {
               <th>joueur</th>
               <th>score</th>
               <th>wpm</th>
+              <th>mots</th>
               <th>précision</th>
               {showTime && <th>temps</th>}
             </tr>
@@ -70,6 +71,7 @@ export function Leaderboard({ session, onBack }: LeaderboardProps) {
                 <td>{entry.username ?? '—'}</td>
                 <td>{entry.score}</td>
                 <td>{entry.wpm}</td>
+                <td>{entry.words ?? '—'}</td>
                 <td>{entry.accuracy}%</td>
                 {showTime && <td>{entry.elapsed_time ? formatTime(entry.elapsed_time) : '—'}</td>}
               </tr>

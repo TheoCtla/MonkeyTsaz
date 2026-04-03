@@ -5,6 +5,7 @@ interface SubmitParams {
   mode: GameMode;
   score: number;
   wpm: number;
+  words: number;
   errors: number;
   accuracy: number;
   elapsed_time?: number;
@@ -19,6 +20,7 @@ export async function submitScore(entry: SubmitParams): Promise<void> {
       mode: String(entry.mode),
       score: entry.score,
       wpm: entry.wpm,
+      words: entry.words,
       errors: entry.errors,
       accuracy: entry.accuracy,
       elapsed_time: entry.elapsed_time,
